@@ -25,7 +25,7 @@ class TaskController extends Controller
     public function store(UserTaskRequest $request){
 
        $validatedData = $request->validated();
-  
+        $validatedData['user_id'] = auth('user')->user()->id;
         $task = TaskFacade::store($validatedData);
         if(!$task['success']){
             return response()->json(['success' => false, 'message' => $task['message']]);
