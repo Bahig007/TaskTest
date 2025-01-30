@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\AdminTaskRequest;
+use App\Http\Requests\UserTaskRequest;
 use App\Models\Task;
 use App\Repository\Facades\TaskFacade;
 use Illuminate\Http\Request;    
@@ -13,6 +13,7 @@ class TaskController extends Controller
     public function index(Request $request){
  
         $filters = $request->input('filter', []);
+        $filters['user_id'] = auth()->user()->id;
         $tasks = TaskFacade::getTasks($filters);
         if(!$tasks['success']){
             return response()->json(['success' => false, 'message' => $tasks['message']]);
@@ -21,7 +22,7 @@ class TaskController extends Controller
         
     }
 
-    public function store(AdminTaskRequest $request){
+    public function store(UserTaskRequest $request){
 
        $validatedData = $request->validated();
   
@@ -42,7 +43,7 @@ class TaskController extends Controller
         return response()->json(['success' => true, 'data' => $task['data']]);
     }
 
-    public function update(AdminTaskRequest $request, $id){
+    public function update(UserTaskRequest $request, $id){
         $task = Task::find($id);
         $this->authorize('update', $task);
         $validatedData = $request->validated();
