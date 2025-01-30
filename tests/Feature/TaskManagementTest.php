@@ -22,7 +22,16 @@ class TaskManagementTest extends TestCase
             'status' => 'pending',
         ];
 
-        $response = $this->actingAs($user, 'api')->postJson('/api/user/tasks', $taskData);
+        // Get JWT Token
+        $response = $this->postJson('/api/user/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->postJson('/api/user/tasks', $taskData);
 
         $response->assertStatus(201)
                  ->assertJson(['title' => 'New Task']);
@@ -39,7 +48,16 @@ class TaskManagementTest extends TestCase
             'status' => 'pending',
         ];
 
-        $response = $this->actingAs($anotherUser, 'api')->postJson('/api/user/tasks', $taskData);
+        // Get JWT Token for another user
+        $response = $this->postJson('/api/user/login', [
+            'email' => $anotherUser->email,
+            'password' => 'password',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->postJson('/api/user/tasks', $taskData);
 
         $response->assertStatus(403)
                  ->assertJson(['message' => 'Unauthorized']);
@@ -52,7 +70,16 @@ class TaskManagementTest extends TestCase
         $task = Task::factory()->create(['user_id' => $user->id]);
         $taskData = ['title' => 'Updated Task'];
 
-        $response = $this->actingAs($user, 'api')->putJson('/api/user/tasks/'.$task->id, $taskData);
+        // Get JWT Token
+        $response = $this->postJson('/api/user/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->putJson('/api/user/tasks/'.$task->id, $taskData);
 
         $response->assertStatus(200)
                  ->assertJson(['title' => 'Updated Task']);
@@ -65,7 +92,16 @@ class TaskManagementTest extends TestCase
         $anotherUser = User::factory()->create();
         $task = Task::factory()->create(['user_id' => $anotherUser->id]);
 
-        $response = $this->actingAs($user, 'api')->putJson('/api/user/tasks/'.$task->id, ['title' => 'Updated Task']);
+        // Get JWT Token
+        $response = $this->postJson('/api/user/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->putJson('/api/user/tasks/'.$task->id, ['title' => 'Updated Task']);
 
         $response->assertStatus(403)
                  ->assertJson(['message' => 'Unauthorized']);
@@ -77,7 +113,16 @@ class TaskManagementTest extends TestCase
         $user = User::factory()->create();
         $task = Task::factory()->create(['user_id' => $user->id]);
 
-        $response = $this->actingAs($user, 'api')->deleteJson('/api/user/tasks/'.$task->id);
+        // Get JWT Token
+        $response = $this->postJson('/api/user/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->deleteJson('/api/user/tasks/'.$task->id);
 
         $response->assertStatus(200)
                  ->assertJson(['message' => 'Task deleted successfully']);
@@ -90,7 +135,16 @@ class TaskManagementTest extends TestCase
         $anotherUser = User::factory()->create();
         $task = Task::factory()->create(['user_id' => $anotherUser->id]);
 
-        $response = $this->actingAs($user, 'api')->deleteJson('/api/user/tasks/'.$task->id);
+        // Get JWT Token
+        $response = $this->postJson('/api/user/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->deleteJson('/api/user/tasks/'.$task->id);
 
         $response->assertStatus(403)
                  ->assertJson(['message' => 'Unauthorized']);
@@ -102,7 +156,16 @@ class TaskManagementTest extends TestCase
         $admin = Admin::factory()->create();
         $task = Task::factory()->create();
 
-        $response = $this->actingAs($admin, 'api')->getJson('/api/admin/tasks');
+        // Get JWT Token for admin
+        $response = $this->postJson('/api/admin/login', [
+            'email' => $admin->email,
+            'password' => 'adminpassword',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->getJson('/api/admin/tasks');
 
         $response->assertStatus(200)
                  ->assertJsonStructure([['id', 'title', 'status']]);
@@ -114,7 +177,16 @@ class TaskManagementTest extends TestCase
         $admin = Admin::factory()->create();
         $task = Task::factory()->create();
 
-        $response = $this->actingAs($admin, 'api')->putJson('/api/admin/tasks/'.$task->id, ['title' => 'Updated by Admin']);
+        // Get JWT Token for admin
+        $response = $this->postJson('/api/admin/login', [
+            'email' => $admin->email,
+            'password' => 'adminpassword',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->putJson('/api/admin/tasks/'.$task->id, ['title' => 'Updated by Admin']);
 
         $response->assertStatus(200)
                  ->assertJson(['title' => 'Updated by Admin']);
@@ -126,7 +198,16 @@ class TaskManagementTest extends TestCase
         $admin = Admin::factory()->create();
         $task = Task::factory()->create();
 
-        $response = $this->actingAs($admin, 'api')->deleteJson('/api/admin/tasks/'.$task->id);
+        // Get JWT Token for admin
+        $response = $this->postJson('/api/admin/login', [
+            'email' => $admin->email,
+            'password' => 'adminpassword',
+        ]);
+        $token = $response->json('token');
+
+        // Pass token in Authorization header
+        $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])
+                         ->deleteJson('/api/admin/tasks/'.$task->id);
 
         $response->assertStatus(200)
                  ->assertJson(['message' => 'Task deleted successfully']);
