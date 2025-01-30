@@ -24,7 +24,6 @@ class TaskController extends Controller
     public function store(AdminTaskRequest $request){
 
        $validatedData = $request->validated();
-  
         $task = TaskFacade::store($validatedData);
         if(!$task['success']){
             return response()->json(['success' => false, 'message' => $task['message']]);
