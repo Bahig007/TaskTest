@@ -13,7 +13,7 @@ class TaskController extends Controller
     public function index(Request $request){
  
         $filters = $request->input('filter', []);
-        $filters['user_id'] = auth()->user()->id;
+        $filters['user_id'] = auth('user')->user()->id;
         $tasks = TaskFacade::getTasks($filters);
         if(!$tasks['success']){
             return response()->json(['success' => false, 'message' => $tasks['message']]);
