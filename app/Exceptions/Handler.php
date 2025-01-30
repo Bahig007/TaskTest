@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -37,6 +39,8 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    
+
     /**
      * Register the exception handling callbacks for the application.
      */
@@ -47,5 +51,14 @@ class Handler extends ExceptionHandler
                 return response()->json($e->errors(), 422);
             }
         });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof ValidationException) {
+            return response()->json($exception->errors(), 422);
+        }
+    
+        return parent::render($request, $exception);
     }
 }
